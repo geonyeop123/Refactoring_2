@@ -28,6 +28,8 @@ function statement(invoice, plays) {
   const statementData = {};
   statementData.customer = invoice.customer;
   statementData.performances = invoice.performances.map(enrichPerformance);
+  statementData.totalAmount = totalAmount(statementData);
+  statementData.totalVolumeCredits = totalVolumeCredits(statementData);
   return renderPlainText(statementData, plays);
 
   function enrichPerformance(aPerformance) {
@@ -71,6 +73,14 @@ function statement(invoice, plays) {
       result += Math.floor(perf.audience / 5);
     return result;
   }
+
+  function totalAmount(data) {
+    return data.performances.reduce((total, p) => total + p.amount, 0);
+  }
+
+  function totalVolumeCredits(data) {
+    return data.performances.reduce((total, p) => total + p.volumeCredits, 0);
+  }
 }
 
 function renderPlainText(data, plays) {
@@ -78,25 +88,9 @@ function renderPlainText(data, plays) {
   for (let perf of data.performances) {
     result += ` ${data.play.name} : ${usd(perf.amount)} (${perf.audience}석)\n`;
   }
-  result += `총액 : ${format(totalAmount() / 100)}\n`;
-  result += `적립 포인트 : ${totalVolumeCredits()}점\n`;
+  result += `총액 : ${format(data.totalAmount / 100)}\n`;
+  result += `적립 포인트 : ${data.totalVolumeCredits}점\n`;
   return result;
-
-  function totalAmount() {
-    let result = 0;
-    for (let perf of data.performances) {
-      result += perf.amount;
-    }
-    return result;
-  }
-
-  function totalVolumeCredits() {
-    let result = 0;
-    for (let perf of data.performances) {
-      result += perf.volumeCredits;
-    }
-    return result;
-  }
 
   function usd(aNumber) {
     return new Intl.NumberFormat("en-US", {
