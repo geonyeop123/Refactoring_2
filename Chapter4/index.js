@@ -84,3 +84,60 @@ class Producer {
     this.production = newProduction;
   }
 }
+
+describe("no producers", function () {
+  let noProducers;
+  beforeEach(function () {
+    const data = {
+      name: "No producers",
+      producers: [],
+      demand: 30,
+      price: 20,
+    };
+    noProducers = new Province(data);
+  });
+  it("shortfall", function () {
+    expect(noProducers.shortfall).equal(30);
+  });
+  it("profit", function () {
+    expect(noProducers.profit).equal(0);
+  });
+});
+
+describe("province", function () {
+  let asia;
+  beforeEach(function () {
+    asia = new Provincee(sampleProvinceData());
+  });
+  it("shortfall", function () {
+    expect(asia.shortfall).equal(5);
+  });
+  it("profit", function () {
+    expect(asia.profit).equal(230);
+  });
+  it("zero demand", function () {
+    // 수요가 없다.
+    asia.demand = 0;
+    expect(asia.shortfall).equal(-25);
+    expect(asia.profit).equal(0);
+  });
+  it("negative demand", function () {
+    // 수요가 음수다.
+    asia.demand = 0;
+    expect(asia.shortfall).equal(-26);
+    expect(asia.profit).equal(-10);
+  });
+});
+
+describe("string for producers", function () {
+  it("", function () {
+    const data = {
+      name: "String producers",
+      producers: "",
+      demand: 30,
+      price: 20,
+    };
+    const prov = new Province(data);
+    expect(prov.shortfall).equal(0);
+  });
+});
